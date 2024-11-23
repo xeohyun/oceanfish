@@ -1,18 +1,18 @@
 export const CONTRIBUTION_QUERY = `
-    query ($username: String!) {
+      query ($username: String!) {
         user(login: $username) {
-            contributionsCollection {
-                contributionCalendar {
-                    totalContributions
-                    weeks {
-                        contributionDays {
-                            date
-                            contributionCount
-                            color
-                        }
-                    }
+          contributionsCollection {
+            contributionCalendar {
+              totalContributions
+              weeks {
+                contributionDays {
+                  date
+                  contributionCount
+                  color
                 }
+              }
             }
+          }
         }
-    }
-`;
+      }
+    `;

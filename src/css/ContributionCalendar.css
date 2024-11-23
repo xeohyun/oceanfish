@@ -32,42 +32,42 @@
     flex-direction: column; /* 각 주는 위에서 아래로 배치 */
     gap: 2px; /* 요일 간 간격 */
 }
-/* 각 날짜 셀 */
+/* 기본 날짜 셀 스타일 */
 .day-cell {
-    width: 12px; /* 셀 너비 */
-    height: 12px; /* 셀 높이 */
-    border-radius: 2px; /* 모서리를 약간 둥글게 */
-    background-color: #ebedf0; /* 기본 배경색 (GitHub 스타일) */
-    transition: background-color 0.3s ease, transform 0.2s ease; /* 색상 및 크기 애니메이션 */
-}
-
-/* 기여도에 따른 색상 */
-.day-cell[level="0"] {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
     background-color: #ebedf0; /* 기본 배경색 */
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.day-cell[level="1"] {
-    background-color: #c6dbef; /* 낮은 기여도 (연한 파란색) */
+/* 기여도에 따른 색상 (level-X 클래스 기반) */
+.day-cell.level-0 {
+    background-color: #ebedf0;
 }
 
-.day-cell[level="2"] {
-    background-color: #73b3e7; /* 중간 기여도 */
+.day-cell.level-1 {
+    background-color: #c6dbef;
 }
 
-.day-cell[level="3"] {
-    background-color: #2879b9; /* 높은 기여도 */
+.day-cell.level-2 {
+    background-color: #73b3e7;
 }
 
-.day-cell[level="4"] {
-    background-color: #084594; /* 가장 높은 기여도 (진한 파란색) */
+.day-cell.level-3 {
+    background-color: #2879b9;
+}
+
+.day-cell.level-4 {
+    background-color: #084594;
 }
 
 /* 호버 애니메이션 */
 .day-cell:hover {
-    transform: scale(1.2); /* 셀 확대 */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* 그림자 강조 */
-    cursor: pointer; /* 마우스 포인터 변경 */
+    transform: scale(1.2);
+    cursor: pointer;
 }
+
 
 /* 캘린더 전체 호버 시 */
 .calendar-grid:hover .day-cell {

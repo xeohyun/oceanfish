@@ -1,7 +1,7 @@
 .ocean-level-container {
     position: fixed;
-    bottom: 20px;
-    left: 20px;
+    top: 20px;
+    right: 20px;
     width: 300px;
     padding: 15px;
     background-color: white;
