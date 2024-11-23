@@ -1,0 +1,6 @@
+.ocean_sunfish {
+    position: absolute;
+    width: 120px;
+    height: auto;
+    transition: transform 50s ease-in-out;
+}

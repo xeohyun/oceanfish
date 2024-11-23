@@ -1,0 +1,11 @@
+.contribution-calendar {
+    position: fixed; /* 화면에 고정 */
+    bottom: 20px;    /* 화면 하단에서 20px 떨어짐 */
+    left: 20px;      /* 화면 왼쪽에서 20px 떨어짐 */
+    width: 220px;    /* 캘린더 전체 너비 */
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.9); /* 반투명 배경 */
+    border-radius: 8px; /* 둥근 모서리 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 */
+    z-index: 1000;  /* 다른 요소보다 위에 배치 */
+}
