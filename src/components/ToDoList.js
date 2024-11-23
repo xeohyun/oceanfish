@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../css/ToDoList.css';
 
 function ToDoList() {
     const [isExpanded, setIsExpanded] = useState(false); // Collapsible state
-    const [tasks, setTasks] = useState([
-        { id: 1, text: 'Morning walk', completed: false, time: '7:00am' },
-        { id: 2, text: 'Meeting with John Doe', completed: false, time: '9:30am' },
-        { id: 3, text: 'Buy Pizza from Pizzahut', completed: false, time: '11:00am' },
-    ]);
+    const [tasks, setTasks] = useState(() => {
+        // 브라우저가 저장한 tasks 데이터 로드
+        const savedTasks = localStorage.getItem('tasks');
+        return savedTasks ? JSON.parse(savedTasks) : [];
+    });
     const [newTask, setNewTask] = useState(''); // Input for new tasks
     const [newTaskTime, setNewTaskTime] = useState(''); // Input for task time
 
@@ -15,26 +15,69 @@ function ToDoList() {
 
     const addTask = () => {
         if (newTask.trim()) {
-            setTasks([
+            const updatedTasks = [
                 ...tasks,
-                { id: tasks.length + 1, text: newTask, completed: false, time: newTaskTime || 'N/A' },
-            ]);
+                {
+                    id: tasks.length + 1,
+                    text: newTask,
+                    completed: false,
+                    time: newTaskTime || '', // 시간 값이 없으면 빈 문자열
+                },
+            ];
+            setTasks(updatedTasks);
+            localStorage.setItem('tasks', JSON.stringify(updatedTasks)); // localStorage에 저장
             setNewTask('');
             setNewTaskTime('');
         }
     };
 
     const deleteTask = (taskId) => {
-        setTasks(tasks.filter((task) => task.id !== taskId)); // Remove the task with the given ID
+        const updatedTasks = tasks.filter((task) => task.id !== taskId);
+        setTasks(updatedTasks);
+        localStorage.setItem('tasks', JSON.stringify(updatedTasks)); // localStorage에 저장
     };
 
     const toggleTaskCompletion = (taskId) => {
-        setTasks(
-            tasks.map((task) =>
-                task.id === taskId ? { ...task, completed: !task.completed } : task
-            )
+        const updatedTasks = tasks.map((task) =>
+            task.id === taskId ? { ...task, completed: !task.completed } : task
         );
+        setTasks(updatedTasks);
+        localStorage.setItem('tasks', JSON.stringify(updatedTasks)); // localStorage에 저장
     };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // 기본 엔터 동작 방지 (예: 폼 제출)
+            addTask();
+        }
+    };
+
+    useEffect(() => {
+        // 초기화 시간을 계산
+        const now = new Date();
+        const nextMidnight = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate() + 1,
+            0, // 0시 0분
+            0,
+            0
+        );
+        const timeUntilNextMidnight = nextMidnight - now;
+
+        // 다음 정오에 초기화 타이머 설정
+        const timer = setTimeout(() => {
+            setTasks([]); // 작업 초기화
+            localStorage.removeItem('tasks'); // localStorage에서도 초기화
+            setInterval(() => {
+                setTasks([]);
+                localStorage.removeItem('tasks');
+            }, 24 * 60 * 60 * 1000); // 이후 매일 정오에 초기화
+        }, timeUntilNextMidnight);
+
+        // 컴포넌트 언마운트 시 타이머 정리
+        return () => clearTimeout(timer);
+    }, []);
 
     return (
         <div className={`todo-container ${isExpanded ? 'expanded' : ''}`}>
@@ -54,7 +97,7 @@ function ToDoList() {
                                         onChange={() => toggleTaskCompletion(task.id)}
                                     />
                                     <span className="todo-text">{task.text}</span>
-                                    <span className="todo-time">{task.time}</span>
+                                    {task.time && <span className="todo-time">{task.time}</span>}
                                 </div>
                                 <button className="delete-btn" onClick={() => deleteTask(task.id)}>
                                     &times;
@@ -68,6 +111,7 @@ function ToDoList() {
                             value={newTask}
                             onChange={(e) => setNewTask(e.target.value)}
                             placeholder="New task..."
+                            onKeyDown={handleKeyPress} // Enter key 이벤트 핸들러
                         />
                         <input
                             type="time"
