@@ -11,6 +11,15 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
 from pathlib import Path
+from decouple import config
+
+# SECRET_KEY 및 GITHUB_ACCESS_TOKEN을 환경 변수에서 읽기
+SECRET_KEY = config('SECRET_KEY', default='fallback-secret-key')
+DEBUG = config('DEBUG', default=True, cast=bool)
+GITHUB_ACCESS_TOKEN = config('GITHUB_ACCESS_TOKEN')
+
+# ALLOWED_HOSTS 설정도 환경 변수로 관리 가능 (옵션)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default=[], cast=lambda v: v.split(','))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +29,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@px+@7$$jvn$6bvicm*=)p#7dnoh1#j2regh@(1bsgiso)8zj_'
+#SECRET_KEY = 'django-insecure-@px+@7$$jvn$6bvicm*=)p#7dnoh1#j2regh@(1bsgiso)8zj_'
+
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'mola',
     'corsheaders',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -127,3 +139,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MIDDLEWARE.insert(0, 'corsheaders.middleware.CorsMiddleware')
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+# HTTP 메서드 설정 (기본적으로 GET, POST 허용)
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'OPTIONS',
+]
+
+# 헤더 설정
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'x-requested-with',
+]

@@ -2,46 +2,56 @@ import React, { useState, useEffect } from 'react';
 import '../css/OceanSunFish.css';
 
 function OceanSunFish() {
-    const [level, setLevel] = useState(1); // Initial level
-    const [dailyContribution, setDailyContribution] = useState(0); // Placeholder for daily contribution
-    const [stage, setStage] = useState('dust'); // Initial stage
+    const [level, setLevel] = useState(1);
+    const [isAlive, setIsAlive] = useState(true);
+    const [dailyContribution, setDailyContribution] = useState(0);
+    const [stage, setStage] = useState('dust');
 
-    // Simulate daily contribution updates
     useEffect(() => {
-        // Example: Fetch daily contributions (replace with real API call)
-        const fetchDailyContribution = () => {
-            const contribution = Math.floor(Math.random() * 5) + 1; // Simulated contribution (1–5)
-            setDailyContribution(contribution);
-            setLevel((prevLevel) => prevLevel + contribution); // Increase level by contribution
+        const fetchSunfishData = async () => {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/sunfish/');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch sunfish data');
+                }
+                const data = await response.json();
+                console.log('Sunfish API Response:', data);
+
+                setLevel(data.level);
+                setIsAlive(data.is_alive);
+                setDailyContribution(data.daily_contribution);
+                updateStage(data.level);
+            } catch (error) {
+                console.error('Error fetching sunfish data:', error);
+            }
         };
 
-        const interval = setInterval(fetchDailyContribution, 24 * 60 * 60 * 1000); // Every 24 hours
-        return () => clearInterval(interval); // Cleanup
+        fetchSunfishData();
     }, []);
 
-    // Update stage based on level
-    useEffect(() => {
+    const updateStage = (level) => {
         if (level >= 1 && level <= 3) {
-            setStage('dust'); // 먼지 단계
+            setStage('dust');
         } else if (level >= 4 && level <= 10) {
-            setStage('baby'); // 아기 단계
+            setStage('baby');
         } else if (level >= 11 && level <= 30) {
-            setStage('adult'); // 개복치 단계
+            setStage('adult');
         } else if (level >= 31 && level <= 50) {
-            setStage('king'); // 왕복치 단계
+            setStage('king');
         } else if (level >= 51) {
-            setStage('new'); // 새로운 개복치 생성
-            setLevel(1); // Reset level for new ocean sunfish
+            setStage('new');
+            setLevel(1);
         }
-    }, [level]);
+    };
 
     return (
         <div className="ocean-level-container">
             <h2>Level: {level}</h2>
             <p>Stage: {stage}</p>
+            <p>Status: {isAlive ? 'Alive' : 'Dead'}</p>
             <div className="ocean-image">
                 <img
-                    src={`../img/ocean-${stage}.png`} // Dynamically load images based on stage
+                    src={`../img/ocean-${stage}.png`}
                     alt={stage}
                 />
             </div>

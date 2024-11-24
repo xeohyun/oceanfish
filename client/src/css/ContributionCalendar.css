@@ -11,10 +11,11 @@
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* 그림자를 조금 더 진하게 수정 */
     z-index: 1000; /* 다른 요소보다 위에 배치 */
     display: flex; /* 캘린더 내용의 배치를 유연하게 설정 */
-    flex-direction: column; /* 캘린더가 세로 정렬 */
+    flex-direction: row-reverse; /* 캘린더가 세로 정렬 */
     justify-content: center; /* 내용이 가운데 정렬 */
     align-items: center; /* 내용이 수평으로도 가운데 정렬 */
     font-family: Arial, sans-serif; /* 기본 폰트 설정 */
+
 }
 
 /* 캘린더 그리드 컨테이너 */
@@ -29,7 +30,8 @@
 }
 .week-column {
     display: flex;
-    flex-direction: column; /* 각 주는 위에서 아래로 배치 */
+    flex-direction: column; /* 날짜를 위에서 아래로 */
+    justify-content: flex-start; /* 아래쪽 정렬 */
     gap: 2px; /* 요일 간 간격 */
 }
 /* 기본 날짜 셀 스타일 */
