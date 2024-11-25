@@ -1,4 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import dustLeft from '../img/dust_left.png';
+import dustRight from '../img/dust_right.png';
+import fishLeft from '../img/adult_left.png';
+import fishLeft1 from '../img/adult_left1.png';
+import fishRight from '../img/adult_right.png';
+import fishRight1 from '../img/adult_right1.png';
 import '../css/OceanSunFish.css';
 
 function OceanSunFish() {
@@ -6,6 +12,15 @@ function OceanSunFish() {
     const [isAlive, setIsAlive] = useState(true);
     const [dailyContribution, setDailyContribution] = useState(0);
     const [stage, setStage] = useState('dust');
+
+    const images = {
+        dust: dustLeft,
+        dustRight: dustRight,
+        fishLeft: fishLeft,
+        fishLeft1: fishLeft1,
+        fishRight: fishRight,
+        fishRight1: fishRight1,
+    };
 
     useEffect(() => {
         const fetchSunfishData = async () => {
@@ -15,8 +30,6 @@ function OceanSunFish() {
                     throw new Error('Failed to fetch sunfish data');
                 }
                 const data = await response.json();
-                console.log('Sunfish API Response:', data);
-
                 setLevel(data.level);
                 setIsAlive(data.is_alive);
                 setDailyContribution(data.daily_contribution);
@@ -50,10 +63,7 @@ function OceanSunFish() {
             <p>Stage: {stage}</p>
             <p>Status: {isAlive ? 'Alive' : 'Dead'}</p>
             <div className="ocean-image">
-                <img
-                    src={`../img/ocean-${stage}.png`}
-                    alt={stage}
-                />
+                <img src={images[stage]} alt={stage} />
             </div>
             <p>Today's Contribution: {dailyContribution}</p>
         </div>

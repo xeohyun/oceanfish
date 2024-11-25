@@ -5,6 +5,7 @@ import ContributionCalendar from './components/ContributionCalendar';
 import './App.css';
 import ToDoList from "./components/ToDoList";
 import CurrentDateTime from "./components/CurrentDateTime";
+import MovingFish from "./components/MovingFish";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <ContributionCalendar/>
           <ToDoList/>
           <CurrentDateTime />
+          <MovingFish/>
       </div>
   );
 }
