@@ -6,6 +6,7 @@ import './App.css';
 import ToDoList from "./components/ToDoList";
 import CurrentDateTime from "./components/CurrentDateTime";
 import MovingFish from "./components/MovingFish";
+import MultipleSunfish from "./components/MultipleSunfish";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <ToDoList/>
           <CurrentDateTime />
           <MovingFish/>
+          <MultipleSunfish/>
       </div>
   );
 }

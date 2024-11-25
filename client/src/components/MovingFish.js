@@ -7,6 +7,8 @@ import fishLeft from '../img/adult_left.png';
 import fishLeft1 from '../img/adult_left1.png';
 import fishRight from '../img/adult_right.png';
 import fishRight1 from '../img/adult_right1.png';
+import kingLeft from '../img/king_left.png';
+import kingRight from '../img/king_right.png'
 import '../css/MovingFish.css';
 
 function MovingFish() {
@@ -27,6 +29,10 @@ function MovingFish() {
             left: [fishLeft, fishLeft1],
             right: [fishRight, fishRight1],
         },
+        king: {
+            left: [kingLeft],
+            right: [kingRight],
+        }
     };
 
     // Fetch initial fish data from backend
