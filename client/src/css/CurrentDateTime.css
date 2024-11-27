@@ -10,12 +10,12 @@
 
 /* Date/Time Card */
 .datetime-card {
-    width: 220px;
+    width: 250px;
     background-color: rgba(255, 255, 255, 0.96);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     padding: 15px;
-    text-align: left;
+    text-align: center;
 }
 
 /* Date Style */

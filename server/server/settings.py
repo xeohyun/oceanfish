@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'mola',
     'corsheaders',
     'rest_framework',
+    'channels',
 ]
 
 MIDDLEWARE = [

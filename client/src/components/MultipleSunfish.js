@@ -1,3 +1,4 @@
+/*
 import React, { useState, useEffect } from "react";
 import "../css/MultipleSunfish.css";
 
@@ -43,4 +44,4 @@ function MultipleSunfish() {
     );
 }
 
-export default MultipleSunfish;
+export default MultipleSunfish;*/

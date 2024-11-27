@@ -4,7 +4,6 @@ from rest_framework.views import APIView
 from decouple import config
 from mola.models import Sunfish, Contribution
 
-
 class GitHubContributionAPI(APIView):
     def get(self, request, username):
         GITHUB_ACCESS_TOKEN = config('GITHUB_ACCESS_TOKEN')
@@ -40,18 +39,12 @@ class GitHubContributionAPI(APIView):
             data = response.json()
             weeks = data['data']['user']['contributionsCollection']['contributionCalendar']['weeks']
 
-            # 활성화된 Sunfish 객체 가져오기
-            active_sunfish = Sunfish.objects.filter(is_alive=True).first()
-            if not active_sunfish:
-                return JsonResponse({"error": "No active sunfish found"}, status=404)
-
             for week in weeks:
                 for day in week['contributionDays']:
                     Contribution.objects.update_or_create(
-                        sunfish=active_sunfish,  # 활성화된 sunfish와 연결
-                        date=day['date'],
+                        date=day['date'],  # Sunfish와 연결 없이 날짜별로 저장
                         defaults={'count': day['contributionCount']}
                     )
-            return JsonResponse(data)
+            return JsonResponse({"message": "Contributions successfully fetched and saved", "username": username})
 
         return JsonResponse({"error": "Failed to fetch contributions"}, status=response.status_code)
