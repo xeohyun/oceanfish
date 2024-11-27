@@ -20,17 +20,8 @@ class Sunfish(models.Model):
 
 # models.py
 class Contribution(models.Model):
-    sunfish = models.ForeignKey(
-        Sunfish,
-        on_delete=models.SET_NULL,  # Sunfish 삭제 시 NULL로 설정
-        null=True,
-        blank=True,
-        related_name="contributions"
-    )
     date = models.DateField()
     count = models.IntegerField(default=0)
-    source = models.CharField(max_length=50, default="GitHub")  # 기여 데이터의 출처
 
     def __str__(self):
-        return f"{self.sunfish.name if self.sunfish else 'No Sunfish'} - {self.date}: {self.count} contributions"
-
+        return f"{self.date}: {self.count}"

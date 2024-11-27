@@ -2,7 +2,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from mola.models import Contribution
 
-# views.py
 class ContributionAPI(APIView):
     def get(self, request):
         try:
@@ -11,7 +10,6 @@ class ContributionAPI(APIView):
                 {
                     "date": contribution.date,
                     "count": contribution.count,
-                    "sunfish": contribution.sunfish.name if contribution.sunfish else "No Sunfish",
                 }
                 for contribution in contributions
             ]

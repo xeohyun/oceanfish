@@ -17,7 +17,6 @@ function App() {
         <OceanSunfish />
           <ToDoList/>
           <CurrentDateTime />
-
       </div>
   );
 }
