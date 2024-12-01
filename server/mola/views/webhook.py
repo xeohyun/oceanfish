@@ -5,7 +5,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
-from mola.models import Contribution, Sunfish
+from datetime import datetime
+from mola.models import Contribution
 from server.settings import GITHUB_WEBHOOK_SECRET
 
 
@@ -19,9 +20,10 @@ class GitHubWebhook(APIView):
 
         try:
             payload = json.loads(request.body)
+            print(f"Received payload: {payload}")
             event = request.headers.get("X-GitHub-Event")
 
-            # Handle push event
+            # Handle only push event
             if event == "push":
                 self.handle_push_event(payload)
                 return JsonResponse({"status": "Push event processed successfully"})
@@ -29,28 +31,58 @@ class GitHubWebhook(APIView):
             return JsonResponse({"error": "Unsupported event"}, status=400)
 
         except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid payload"}, status=400)
+            return JsonResponse({"error": "Invalid JSON payload"}, status=400)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 
     def verify_signature(self, payload, signature):
+        """Verify the HMAC-SHA256 signature."""
         if not GITHUB_WEBHOOK_SECRET or not signature:
             return False
+
+        # Compute the HMAC digest
         digest = hmac.new(
             key=GITHUB_WEBHOOK_SECRET.encode(),
             msg=payload,
             digestmod=hashlib.sha256,
         ).hexdigest()
+        # Compare signatures securely
         return hmac.compare_digest(f"sha256={digest}", signature)
 
     def handle_push_event(self, payload):
-        pusher_name = payload.get("pusher", {}).get("name", "unknown")
-        commits = payload.get("commits", [])
-        commit_count = len(commits)
+        """Handle GitHub push events and save contributions."""
+        try:
+            commits = payload.get("commits", [])
+            commit_count = len(commits)
 
-        # Update the Sunfish model based on the push
-        active_sunfish = Sunfish.objects.filter(is_alive=True).first()
-        if active_sunfish:
-            Contribution.objects.create(
-                sunfish=active_sunfish, date=payload.get("repository", {}).get("pushed_at"), count=commit_count
+            # Parse the pushed_at field from the repository metadata
+            pushed_at = payload.get("repository", {}).get("pushed_at")
+            pushed_date = self.parse_pushed_at(pushed_at)
+            print(f"Parsed pushed_at: {pushed_date}")
+
+            if not pushed_date:
+                raise ValueError("Invalid pushed_at field format")
+
+            # Save contributions to the database
+            Contribution.objects.update_or_create(
+                date=pushed_date.date(),
+                defaults={"count": commit_count},
             )
+        except Exception as e:
+            print(f"Error in handle_push_event: {e}")
+            raise e
+
+    def parse_pushed_at(self, pushed_at):
+        """Helper function to parse pushed_at field into a datetime object."""
+        if isinstance(pushed_at, int):
+            # Handle Unix timestamp
+            return datetime.fromtimestamp(pushed_at)
+        elif isinstance(pushed_at, str):
+            try:
+                # Handle ISO8601 format
+                return datetime.strptime(pushed_at, "%Y-%m-%dT%H:%M:%SZ")
+            except ValueError as e:
+                print(f"Error parsing pushed_at: {e}")
+                return None
+        print("Unsupported pushed_at format")
+        return None

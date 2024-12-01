@@ -4,7 +4,7 @@ import OceanSunfish from './components/OceanSunFishStatus';
 import './App.css';
 import ToDoList from "./components/ToDoList";
 import CurrentDateTime from "./components/CurrentDateTime";
-import CreateSunfish from "./components/CreateSunfish";
+/*import CreateSunfish from "./components/CreateSunfish";*/
 import ContributionDisplay from "./components/ContributionDisplay";
 
 
@@ -13,7 +13,7 @@ function App() {
       <div className="App">
         <Background />
           <ContributionDisplay/>
-          <CreateSunfish/>
+{/*          <CreateSunfish/>*/}
         <OceanSunfish />
           <ToDoList/>
           <CurrentDateTime />

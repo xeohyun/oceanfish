@@ -1,3 +1,4 @@
+/*
 import React, { useState, useEffect } from "react";
 import "../css/CreateSunfish.css";
 
@@ -84,7 +85,7 @@ function CreateSunfish() {
 
     return (
         <div className="create-sunfish-wrapper">
-            {/* 평소에 작은 버튼 */}
+            {/!* 평소에 작은 버튼 *!/}
             {!isModalOpen && (
                 <button
                     className="open-create-sunfish-btn"
@@ -101,7 +102,7 @@ function CreateSunfish() {
                 </button>
             )}
 
-            {/* 모달 창 */}
+            {/!* 모달 창 *!/}
             {isModalOpen && (
                 <div className="create-sunfish-container">
                     <h2>Create a New Sunfish</h2>
@@ -144,3 +145,4 @@ function CreateSunfish() {
 }
 
 export default CreateSunfish;
+*/
