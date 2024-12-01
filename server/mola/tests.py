@@ -1,22 +1,23 @@
-import requests
-from decouple import config
+from datetime import date
+from django.test import TestCase
+from mola.models import Contribution
 
-# .env 파일에서 토큰 가져오기
-GITHUB_ACCESS_TOKEN = config("GITHUB_ACCESS_TOKEN")
+class ContributionTestCase(TestCase):
+    def test_today_contributions(self):
+        today = date.today()
 
-headers = {
-    "Authorization": f"Bearer {GITHUB_ACCESS_TOKEN}"
-}
+        # 오늘 날짜의 기여도 확인
+        contribution, created = Contribution.objects.get_or_create(date=today, defaults={"count": 0})
+        print(f"Today's Contribution: {contribution.count}, Created: {created}")
 
-try:
-    response = requests.get("https://api.github.com/user", headers=headers)
+        # 외부 데이터를 기반으로 업데이트
+        updated_count = Contribution.get_updated_count()
+        print(f"Updated Count from API: {updated_count}")
 
-    if response.status_code == 200:
-        print("GitHub API 연동 성공:")
-        print(response.json())
-    else:
-        print("GitHub API 연동 실패:")
-        print(f"Status Code: {response.status_code}")
-        print(response.text)
-except Exception as e:
-    print(f"예외 발생: {str(e)}")
+        # 업데이트 적용
+        contribution.count = updated_count
+        contribution.save()
+        print(f"Final Contribution Count: {contribution.count}")
+
+        # 테스트 검증
+        self.assertEqual(contribution.count, updated_count, "Today's contribution count mismatch")

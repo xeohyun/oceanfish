@@ -9,6 +9,7 @@ function OceanSunFishStatus() {
     const [sunfish, setSunfish] = useState(null); // 가장 최근 Sunfish 데이터를 저장
     const [allSunfish, setAllSunfish] = useState([]); // 모든 Sunfish 데이터를 저장
     const [dropdownOpen, setDropdownOpen] = useState(false); // 드롭다운 상태
+    const [refreshFlag, setRefreshFlag] = useState(false); // 데이터 강제 동기화 플래그
 
     const images = {
         dust: dustLeft,
@@ -17,39 +18,34 @@ function OceanSunFishStatus() {
         king: kingLeft,
     };
 
-    useEffect(() => {
-        const fetchSunfishData = async () => {
-            try {
-                // Sunfish 데이터를 가져오기
-                const response = await fetch('http://127.0.0.1:8000/api/sunfish/');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch Sunfish data');
-                }
-                const data = await response.json();
-
-                if (Array.isArray(data) && data.length > 0) {
-                    const latestSunfish = data[data.length - 1];
-                    setSunfish(latestSunfish);
-
-                    // 살아있는 Sunfish만 필터링하여 저장
-                    const aliveSunfish = data.filter((fish) => fish.is_alive);
-                    setAllSunfish(aliveSunfish);
-
-                    // 기여도를 기반으로 레벨업 처리
-                    await handleLevelUp(latestSunfish.id);
-                } else {
-                    console.warn("No Sunfish data available");
-                    setSunfish(null);
-                    setAllSunfish([]);
-                }
-            } catch (error) {
-                console.error('Error fetching Sunfish data:', error);
+    // 데이터 동기화 API 호출
+    const fetchSunfishData = async () => {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/sunfish/');
+            if (!response.ok) {
+                throw new Error('Failed to fetch Sunfish data');
             }
-        };
+            const data = await response.json();
 
-        fetchSunfishData();
-    }, []);
+            if (Array.isArray(data) && data.length > 0) {
+                const latestSunfish = data[data.length - 1];
+                setSunfish(latestSunfish);
 
+                const aliveSunfish = data.filter((fish) => fish.is_alive);
+                setAllSunfish(aliveSunfish);
+
+                // 최신 Sunfish 데이터와 연계된 기여도 업데이트
+                await handleLevelUp(latestSunfish.id);
+            } else {
+                setSunfish(null);
+                setAllSunfish([]);
+            }
+        } catch (error) {
+            console.error('Error fetching Sunfish data:', error);
+        }
+    };
+
+    // Sunfish 레벨 업데이트 및 기여도 동기화
     const handleLevelUp = async (sunfishId) => {
         try {
             const response = await fetch(`http://127.0.0.1:8000/api/contributions/${sunfishId}/`);
@@ -58,16 +54,12 @@ function OceanSunFishStatus() {
             }
             const contributions = await response.json();
 
-            // 오늘의 기여도를 합산
             const totalContributions = contributions.reduce((sum, entry) => sum + entry.count, 0);
 
-            // 레벨업 계산 (하루 최대 4 레벨)
             const levelUp = Math.min(4, totalContributions);
-
-            // 새로운 레벨을 서버에 반영
             await updateSunfishLevel(sunfishId, levelUp);
         } catch (error) {
-            console.error('Error fetching contributions:', error);
+            console.error('Error handling level up:', error);
         }
     };
 
@@ -93,6 +85,16 @@ function OceanSunFishStatus() {
         }
     };
 
+    // 데이터 동기화: 컴포넌트 마운트 또는 플래그 변경 시 실행
+    useEffect(() => {
+        fetchSunfishData();
+    }, [refreshFlag]); // refreshFlag 변경 시마다 데이터 다시 가져옴
+
+    // 동기화를 강제하는 함수
+    const forceRefresh = () => {
+        setRefreshFlag((prev) => !prev); // 플래그 토글
+    };
+
     if (!sunfish) {
         return <div>Loading Sunfish...</div>;
     }
@@ -115,6 +117,11 @@ function OceanSunFishStatus() {
 
     return (
         <div className="ocean-level-container">
+            {/* 새로고침 버튼 추가 */}
+            <button className="refresh-button" onClick={forceRefresh}>
+                Refresh Data
+            </button>
+
             {/* 현재 Sunfish 상태 표시 */}
             <div
                 className="current-sunfish-container"
