@@ -1,0 +1,19 @@
+name: Log Push Events
+
+# 워크플로 트리거 설정
+on:
+  push:
+    branches:
+      - main  # 'main' 브랜치에 push 이벤트가 발생하면 실행
+
+# Job 정의
+jobs:
+  log-push-events:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3  # 리포지토리 코드 체크아웃
+
+    - name: Log push events
+      run: echo "Push event detected on branch: ${{ github.ref_name }}"
