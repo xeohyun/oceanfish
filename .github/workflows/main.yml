@@ -20,10 +20,11 @@ jobs:
         echo "Pusher: ${{ github.event.pusher.name }}"
 
     - name: Send data to external server
-      run: curl -X POST https://your-server-endpoint/api/log-events \
-            -H "Content-Type: application/json" \
-            -d '{
-              "branch": "${{ github.ref_name }}",
-              "commit_message": "${{ github.event.head_commit.message }}",
-              "pusher": "${{ github.event.pusher.name }}"
-            }'
+      run: |
+        curl -X POST https://your-server-endpoint/api/log-events \
+             -H "Content-Type: application/json" \
+             -d '{
+               "branch": "${{ github.ref_name }}",
+               "commit_message": "${{ github.event.head_commit.message }}",
+               "pusher": "${{ github.event.pusher.name }}"
+             }'
