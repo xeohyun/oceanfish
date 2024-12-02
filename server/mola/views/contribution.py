@@ -18,9 +18,9 @@ class ContributionAPI(APIView):
             if not created:
                 # 존재하지 않으면 외부 데이터와 동기화
                 updated_count = Contribution.fetch_commit_count(username)
-                print(contribution['count'])
-                if contribution['count'] != updated_count:
-                    contribution['count'] = updated_count
+                print(contribution.count)
+                if contribution.count != updated_count:
+                    contribution.count = updated_count
                     contribution.save()
 
             # 최근 1년간의 기여도 데이터를 가져오기

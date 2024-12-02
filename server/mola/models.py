@@ -1,3 +1,5 @@
+from wsgiref.util import request_uri
+
 from django.db import models
 from datetime import date, datetime
 import requests
@@ -118,7 +120,8 @@ class Contribution(models.Model):
             result = find_today_contribution(weeks, today)
             print(result)
 
-            return result['contributionCount']
+            if result:
+                return result['contributionCount']
 
         return 0
 
@@ -145,8 +148,8 @@ class Contribution(models.Model):
             contribution = cls.objects.create(date=date, **defaults)
             created = True
 
-        contribution_data = {
+        """contribution_data = {
         'date': contribution.date.strftime("%Y-%m-%d"),  # Format the date
         'count': contribution.count,
-        }
-        return contribution_data, created
+        }"""
+        return contribution, created
