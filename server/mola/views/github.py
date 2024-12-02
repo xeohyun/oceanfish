@@ -2,6 +2,7 @@ import requests
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from decouple import config
+from datetime import date
 from mola.models import Sunfish, Contribution
 
 class GitHubContributionAPI(APIView):
@@ -19,10 +20,10 @@ class GitHubContributionAPI(APIView):
                 contributionsCollection {
                     contributionCalendar {
                         weeks {
-                            contributionDays {
-                                date
-                                contributionCount
-                            }
+                          contributionDays {
+                            contributionCount
+                            date
+                          }
                         }
                     }
                 }
@@ -37,14 +38,25 @@ class GitHubContributionAPI(APIView):
         response = requests.post(url, json=body, headers=headers)
         if response.status_code == 200:
             data = response.json()
-            weeks = data['data']['user']['contributionsCollection']['contributionCalendar']['weeks']
 
-            for week in weeks:
-                for day in week['contributionDays']:
-                    Contribution.objects.update_or_create(
-                        date=day['date'],  # Sunfish와 연결 없이 날짜별로 저장
-                        defaults={'count': day['contributionCount']}
-                    )
+            weeks = data['data']['user']['contributionsCollection']['contributionCalendar']['weeks'][-1:]
+
+            # 오늘 날짜 가져오기
+            today = date.today().isoformat()
+
+            # 오늘 날짜와 일치하는 객체 찾기
+            def find_today_contribution(data, today):
+                for item in data:
+                    if "contributionDays" in item:
+                        for contribution in item["contributionDays"]:
+                            if contribution["date"] == today:
+                                return contribution
+                return None
+
+            # 함수 실행
+            result = find_today_contribution(weeks, today)
+            print(result)
+
             return JsonResponse({"message": "Contributions successfully fetched and saved", "username": username})
 
         return JsonResponse({"error": "Failed to fetch contributions"}, status=response.status_code)

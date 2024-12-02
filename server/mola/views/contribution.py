@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from django.http import JsonResponse
 from rest_framework.views import APIView
-from mola.models import Contribution
+from ..models import Contribution
 
 class ContributionAPI(APIView):
     def get(self, request):
@@ -10,16 +10,17 @@ class ContributionAPI(APIView):
             today = date.today()
 
             # 오늘의 Contribution 생성 또는 동기화
-            contribution, created = Contribution.objects.get_or_create(
+            contribution, created = Contribution.get_or_create(
                 date=today,
                 defaults={"count": Contribution.fetch_commit_count(username)}
             )
-
+            print(contribution, created)
             if not created:
-                # 이미 존재하면 외부 데이터와 동기화
+                # 존재하지 않으면 외부 데이터와 동기화
                 updated_count = Contribution.fetch_commit_count(username)
-                if contribution.count != updated_count:
-                    contribution.count = updated_count
+                print(contribution['count'])
+                if contribution['count'] != updated_count:
+                    contribution['count'] = updated_count
                     contribution.save()
 
             # 최근 1년간의 기여도 데이터를 가져오기
