@@ -152,6 +152,7 @@ class Contribution(models.Model):
                     if event['type'] == 'PushEvent':
                         event_date = datetime.date.fromisoformat(event['created_at'][:10])
                         if event_date == today:
+                            print(f"total_commits: Processed {len(event['payload']['commits'])} events.")
                             total_commits += len(event['payload']['commits'])
 
                 print(f"Page {page}: Processed {len(page_events)} events.")
