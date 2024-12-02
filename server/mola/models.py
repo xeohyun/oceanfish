@@ -2,6 +2,7 @@ from django.db import models
 from datetime import date
 import requests
 import os
+import datetime
 from cachetools import TTLCache
 from dotenv import load_dotenv
 
@@ -99,7 +100,6 @@ class Contribution(models.Model):
                 print(f"Page {page}: {len(page_events)} events fetched.")
 
                 # PushEvent 필터링 및 날짜 확인
-                import datetime
                 push_events = [
                     event for event in page_events
                     if event['type'] == 'PushEvent' and
@@ -116,3 +116,55 @@ class Contribution(models.Model):
         except Exception as e:
             print(f"Error fetching updated count: {e}")
             return 0
+
+    @staticmethod
+    def fetch_commit_count(username):
+        """
+        Fetch and count the total number of commits for a GitHub user today.
+        """
+        try:
+            token = os.getenv("GITHUB_ACCESS_TOKEN")
+
+            if not token:
+                raise Exception("GITHUB_ACCESS_TOKEN is not set in environment variables.")
+
+            headers = {"Authorization": f"token {token}"}
+            today = datetime.date.today()
+            total_commits = 0
+            page = 1
+
+            while True:
+                # GitHub API 요청
+                response = requests.get(
+                    f'https://api.github.com/users/{username}/events?page={page}',
+                    headers=headers
+                )
+
+                if response.status_code != 200:
+                    raise Exception(f"Failed to fetch data: {response.status_code}")
+
+                page_events = response.json()
+                if not page_events:
+                    break  # 더 이상 가져올 이벤트가 없으면 종료
+
+                # PushEvent에서 커밋 횟수 집계
+                for event in page_events:
+                    if event['type'] == 'PushEvent':
+                        event_date = datetime.date.fromisoformat(event['created_at'][:10])
+                        if event_date == today:
+                            total_commits += len(event['payload']['commits'])
+
+                print(f"Page {page}: Processed {len(page_events)} events.")
+                page += 1
+
+            print(f"Total commits for today: {total_commits}")
+            return total_commits
+
+        except Exception as e:
+            print(f"Error fetching commit count: {e}")
+            return 0
+
+    # Example 사용법
+    if __name__ == "__main__":
+        username = "xeohyun"
+        fetch_commit_count(username)
