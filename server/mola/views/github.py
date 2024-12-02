@@ -3,7 +3,6 @@ from django.http import JsonResponse
 from rest_framework.views import APIView
 from decouple import config
 from datetime import date
-from mola.models import Sunfish, Contribution
 
 class GitHubContributionAPI(APIView):
     def get(self, request, username):

@@ -19,6 +19,7 @@ class Sunfish(models.Model):
     is_alive = models.BooleanField(default=True)
     creation_date = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)  # Last updated timestamp
+    last_contribution_count = models.IntegerField(default=0)  # 어제까지의 기여도
 
     def __str__(self):
         return f"{self.name} - Level {self.level}, Stage {self.stage}"
@@ -31,10 +32,38 @@ class Sunfish(models.Model):
         if not self.is_alive:
             return  # Dead Sunfish cannot level up
 
+        # Define level increase rules based on contributions
+        if contributions_today == 1:
+            level_increase = 1
+        elif 2 <= contributions_today <= 5:
+            level_increase = 2
+        elif 6 <= contributions_today <= 10:
+            level_increase = 3
+        elif contributions_today >= 11:
+            level_increase = 4
+        else:
+            level_increase = 0  # No contributions, no level increase
+
+        # Ensure the level increase does not exceed the daily maximum
         max_daily_level_up = 4
-        level_increase = min(contributions_today, max_daily_level_up)
+        level_increase = min(level_increase, max_daily_level_up)
+
+        # Update the level
         self.level += level_increase
-        self.update_stage()  # Update stage based on new level
+        if self.level >= 50:
+            self.level = 50  # Cap the level at 50
+            self.save()
+
+            Sunfish.objects.create(
+                name=new_name,
+                level=1,
+                stage="dust",
+                is_alive=True
+            )
+            return
+
+        # Update the stage based on the new level
+        self.update_stage()
         self.save()
 
     def update_stage(self):
