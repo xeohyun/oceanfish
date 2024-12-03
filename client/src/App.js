@@ -11,10 +11,10 @@ import ContributionDisplay from "./components/ContributionDisplay";
 function App() {
   return (
       <div className="App">
-        <Background />
+          <Background />
           <ContributionDisplay/>
-{/*          <CreateSunfish/>*/}
-        <OceanSunfish />
+{/*       <CreateSunfish/>*/}
+          <OceanSunfish />
           <ToDoList/>
           <CurrentDateTime />
       </div>

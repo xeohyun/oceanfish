@@ -6,18 +6,13 @@ from mola.models import Sunfish, Contribution
 class CreateFishAPI(APIView):
     def post(self, request):
         name = request.data.get("name")
+        print(name)
         if not name:
             return Response({"error": "Name is required"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # 죽은 Sunfish가 있거나, 레벨 50 이상인 Sunfish가 있을 때만 생성
-            can_create = Sunfish.objects.filter(is_alive=False).exists() or \
-                         Sunfish.objects.filter(level__gte=50).exists()
-            if not can_create:
-                return Response({"error": "Cannot create a new Sunfish at this time."}, status=status.HTTP_400_BAD_REQUEST)
-
             # 새로운 Sunfish 생성
-            new_sunfish = Sunfish.objects.create(name=name)
+            new_sunfish = Sunfish.create_fish(name=name)
             return Response({
                 "message": "Sunfish created successfully",
                 "sunfish": {
@@ -29,5 +24,10 @@ class CreateFishAPI(APIView):
                     "creation_date": new_sunfish.creation_date,
                 }
             }, status=status.HTTP_201_CREATED)
+
+        except ValueError as e:
+            print(f"ValueError: {e}")  # Debugging 출력
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            print(f"Unexpected error: {e}")  # Debugging 출력
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

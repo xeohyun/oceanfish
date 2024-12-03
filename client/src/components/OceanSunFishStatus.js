@@ -4,12 +4,14 @@ import dustRight from '../img/dust_right.png';
 import fishLeft from '../img/adult_left.png';
 import kingLeft from '../img/king_left.png';
 import '../css/OceanSunFish.css';
+import CreateFishModal from "./CreateFishModal";
 
 function OceanSunFishStatus() {
     const [sunfish, setSunfish] = useState(null); // 가장 최근 Sunfish 데이터를 저장
     const [allSunfish, setAllSunfish] = useState([]); // 모든 Sunfish 데이터를 저장
     const [dropdownOpen, setDropdownOpen] = useState(false); // 드롭다운 상태
     const [refreshFlag, setRefreshFlag] = useState(false); // 데이터 강제 동기화 플래그
+    const [isModalVisible, setModalVisible] = useState(false); // create Sunfish 모달창
 
     const images = {
         dust: dustLeft,
@@ -44,6 +46,32 @@ function OceanSunFishStatus() {
             console.error('Error fetching Sunfish data:', error);
         }
     };
+
+    // Sunfish name 생성
+     const handleCreateFish = (newName) => {
+        fetch('http://127.0.0.1:8000/api/sunfish/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: newName }),
+        })
+            .then(async (response) => {
+            if (response.ok) {
+                alert(`New Sunfish "${newName}" has been created!`);
+            } else {
+                // 서버에서 오류 메시지를 받는 경우 처리
+                const errorData = await response.json();
+                const errorMessage = errorData.error || 'Failed to create Sunfish.';
+                alert(`Error: ${errorMessage}`);
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('An unexpected error occurred while creating the Sunfish.');
+        })
+        .finally(() => setModalVisible(false));
+    }
 
     // Sunfish 레벨 업데이트 및 기여도 동기화
     const handleLevelUp = async (sunfishId) => {
@@ -122,6 +150,13 @@ function OceanSunFishStatus() {
                 Refresh Data
             </button>
 
+            {/* Sunfish가 없는 경우 Modal 표시 */}
+            <CreateFishModal
+                isVisible={isModalVisible}
+                onCreate={handleCreateFish}
+                onClose={() => setModalVisible(false)}
+            />
+            <button onClick={() => setModalVisible(true)}>Simulate Sunfish Creation</button>
             {/* 현재 Sunfish 상태 표시 */}
             <div
                 className="current-sunfish-container"
@@ -131,7 +166,7 @@ function OceanSunFishStatus() {
                 <p>Stage: {stage}</p>
                 <p>Status: {sunfish.is_alive ? 'Alive' : 'Dead'}</p>
                 <div className="ocean-image">
-                    <img src={currentImage} alt={stage} />
+                    <img src={currentImage} alt={stage}/>
                 </div>
                 <p className="dropdown-toggle">{dropdownOpen ? 'Hide All Fish ▲' : 'Show All Fish ▼'}</p>
             </div>
@@ -148,7 +183,7 @@ function OceanSunFishStatus() {
 
                             return (
                                 <div key={fish.id} className="dropdown-sunfish-item">
-                                    <img src={fishImage} alt={fishStage} className="dropdown-sunfish-image" />
+                                    <img src={fishImage} alt={fishStage} className="dropdown-sunfish-image"/>
                                     <div className="dropdown-sunfish-info">
                                         <p>Name: {fish.name}</p>
                                         <p>Status: {fish.is_alive ? 'Alive' : 'Dead'}</p>

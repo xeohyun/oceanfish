@@ -11,7 +11,6 @@ from decouple import config
 # Load environment variables from .env file
 load_dotenv()
 
-
 class Sunfish(models.Model):
     name = models.CharField(max_length=100, default="Mola")
     level = models.IntegerField(default=1)
@@ -53,13 +52,6 @@ class Sunfish(models.Model):
         if self.level >= 50:
             self.level = 50  # Cap the level at 50
             self.save()
-
-            Sunfish.objects.create(
-                name=new_name,
-                level=1,
-                stage="dust",
-                is_alive=True
-            )
             return
 
         # Update the stage based on the new level
@@ -77,6 +69,36 @@ class Sunfish(models.Model):
         elif self.level >= 31:
             self.stage = "king"
         self.save()
+
+    @staticmethod
+    def create_fish(name):
+        """
+        Create a new Sunfish if the most recently active Sunfish has either:
+        1. Reached level 50, or
+        2. Is in a dead state (is_alive=False).
+        """
+        # 가장 최근까지 성장한 Sunfish 가져오기 (creation_date 순으로 정렬)
+        latest_sunfish = Sunfish.objects.order_by('-creation_date').first()
+
+        # 최근 Sunfish가 없는 경우 (첫 Sunfish 생성)
+        if not latest_sunfish:
+            return Sunfish.objects.create(
+                name=name,
+                level=1,
+                stage="dust",
+                is_alive=True
+            )
+            # 최근 Sunfish가 50레벨에 도달하거나 죽은 상태인 경우 새로운 Sunfish 생성
+        if latest_sunfish.level >= 50 or not latest_sunfish.is_alive:
+            return Sunfish.objects.create(
+                name=name,
+                level=1,
+                stage="dust",
+                is_alive=True
+            )
+
+            # 조건이 충족되지 않으면 예외 발생
+        raise ValueError("Cannot create a new Sunfish: The latest Sunfish is still growing.")
 
 
 class Contribution(models.Model):
