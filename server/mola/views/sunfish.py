@@ -57,7 +57,7 @@ class SunfishAPI(APIView):
     def get(self, request):
         try:
             # Sunfish 데이터 가져오기
-            sunfish_list = Sunfish.objects.all()
+            sunfish_list = Sunfish.objects.all().order_by('-creation_date')
             today = date.today()
 
             data = []

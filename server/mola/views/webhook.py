@@ -1,3 +1,4 @@
+"""
 import hmac
 import hashlib
 import json
@@ -36,7 +37,7 @@ class GitHubWebhook(APIView):
             return JsonResponse({"error": str(e)}, status=500)
 
     def verify_signature(self, payload, signature):
-        """Verify the HMAC-SHA256 signature."""
+        #Verify the HMAC-SHA256 signature.
         if not GITHUB_WEBHOOK_SECRET or not signature:
             return False
 
@@ -50,12 +51,12 @@ class GitHubWebhook(APIView):
         return hmac.compare_digest(f"sha256={digest}", signature)
 
     def handle_push_event(self, payload):
-        """Handle GitHub push events and save contributions."""
+        #Handle GitHub push events and save contributions.
         try:
             commits = payload.get("commits", [])
             commit_count = len(commits)
 
-            # Parse the pushed_at field from the repository metadata
+            # Parse pushed_at field from the repository metadata
             pushed_at = payload.get("repository", {}).get("pushed_at")
             pushed_date = self.parse_pushed_at(pushed_at)
             print(f"Parsed pushed_at: {pushed_date}")
@@ -63,26 +64,36 @@ class GitHubWebhook(APIView):
             if not pushed_date:
                 raise ValueError("Invalid pushed_at field format")
 
-            # Save contributions to the database
-            Contribution.objects.update_or_create(
+            # Extract user info from pusher field
+            pusher = payload.get("pusher", {}).get("name", "unknown_user")
+            print(f"Pusher: {pusher}")
+
+            # Save or update contributions for the specific user and date
+            contribution, created = Contribution.objects.update_or_create(
                 date=pushed_date.date(),
-                defaults={"count": commit_count},
+                user=pusher,
+                defaults={
+                    "count": contribution.count + commit_count if not created else commit_count
+                },
             )
+            print(f"Updated contribution: {contribution}")
+
         except Exception as e:
             print(f"Error in handle_push_event: {e}")
             raise e
 
     def parse_pushed_at(self, pushed_at):
-        """Helper function to parse pushed_at field into a datetime object."""
-        if isinstance(pushed_at, int):
-            # Handle Unix timestamp
-            return datetime.fromtimestamp(pushed_at)
-        elif isinstance(pushed_at, str):
-            try:
+        #Helper function to parse pushed_at field into a datetime object.
+        try:
+            if isinstance(pushed_at, int):
+                # Handle Unix timestamp
+                return datetime.fromtimestamp(pushed_at)
+            elif isinstance(pushed_at, str):
                 # Handle ISO8601 format
                 return datetime.strptime(pushed_at, "%Y-%m-%dT%H:%M:%SZ")
-            except ValueError as e:
-                print(f"Error parsing pushed_at: {e}")
-                return None
+        except ValueError as e:
+            print(f"Error parsing pushed_at: {e}")
         print("Unsupported pushed_at format")
         return None
+
+"""

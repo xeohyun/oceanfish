@@ -12,6 +12,8 @@ function OceanSunFishStatus() {
     const [dropdownOpen, setDropdownOpen] = useState(false); // 드롭다운 상태
     const [refreshFlag, setRefreshFlag] = useState(false); // 데이터 강제 동기화 플래그
     const [isModalVisible, setModalVisible] = useState(false); // create Sunfish 모달창
+    const [deadFishIds, setDeadFishIds] = useState([]); // 이미 죽은 Sunfish ID를 추적
+
 
     const images = {
         dust: dustLeft,
@@ -22,30 +24,41 @@ function OceanSunFishStatus() {
 
     // 데이터 동기화 API 호출
     const fetchSunfishData = async () => {
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/sunfish/');
-            if (!response.ok) {
-                throw new Error('Failed to fetch Sunfish data');
-            }
-            const data = await response.json();
+    try {
+        const response = await fetch('http://127.0.0.1:8000/api/sunfish/');
+        if (!response.ok) {
+            throw new Error('Failed to fetch Sunfish data');
+        }
+        const data = await response.json();
 
-            if (Array.isArray(data) && data.length > 0) {
-                const latestSunfish = data[data.length - 1];
-                setSunfish(latestSunfish);
+        if (Array.isArray(data) && data.length > 0) {
+            // 성장 중인 Sunfish 필터링
+            const aliveSunfish = data.filter((fish) => fish.is_alive);
 
-                const aliveSunfish = data.filter((fish) => fish.is_alive);
-                setAllSunfish(aliveSunfish);
+            if (aliveSunfish.length > 0) {
+                // 가장 최근 성장 중인 Sunfish 선택
+                const latestSunfish = aliveSunfish.sort(
+                    (a, b) => new Date(b.creation_date) - new Date(a.creation_date)
+                )[0];
+                setSunfish(latestSunfish); // 현재 Sunfish 설정
+                setAllSunfish(aliveSunfish); // 모든 성장 중인 Sunfish 설정
 
-                // 최신 Sunfish 데이터와 연계된 기여도 업데이트
+                // 레벨 및 기여도 동기화
                 await handleLevelUp(latestSunfish.id);
             } else {
+                // 성장 중인 Sunfish가 없는 경우
                 setSunfish(null);
                 setAllSunfish([]);
             }
-        } catch (error) {
-            console.error('Error fetching Sunfish data:', error);
+        } else {
+            setSunfish(null);
+            setAllSunfish([]);
         }
-    };
+    } catch (error) {
+        console.error('Error fetching Sunfish data:', error);
+    }
+};
+
 
     // Sunfish name 생성
      const handleCreateFish = (newName) => {
@@ -157,6 +170,7 @@ function OceanSunFishStatus() {
                 onClose={() => setModalVisible(false)}
             />
             <button onClick={() => setModalVisible(true)}>Simulate Sunfish Creation</button>
+
             {/* 현재 Sunfish 상태 표시 */}
             <div
                 className="current-sunfish-container"

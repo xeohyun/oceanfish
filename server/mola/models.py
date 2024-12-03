@@ -199,8 +199,4 @@ class Contribution(models.Model):
             contribution = cls.objects.create(date=date, **defaults)
             created = True
 
-        """contribution_data = {
-        'date': contribution.date.strftime("%Y-%m-%d"),  # Format the date
-        'count': contribution.count,
-        }"""
         return contribution, created
