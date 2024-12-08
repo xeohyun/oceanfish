@@ -9,6 +9,7 @@ from mola.models import Sunfish, Contribution
 class SunfishAPI(APIView):
     def post(self, request):
         try:
+            print("POST request received")
             name = request.data.get("name")
             if not name:
                 return Response({"error": "Name is required"}, status=status.HTTP_400_BAD_REQUEST)

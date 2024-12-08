@@ -24,11 +24,29 @@ function OceanSunFishStatus() {
     // 데이터 동기화 API 호출
     const fetchSunfishData = async () => {
     try {
-        const response = await fetch('http://127.0.0.1:8000/api/sunfish/');
+        /*const response = await fetch('http://127.0.0.1:8000/api/sunfish/');
         if (!response.ok) {
             throw new Error('Failed to fetch Sunfish data');
         }
-        const data = await response.json();
+        const data = await response.json();*/
+        const response = await fetch('http://127.0.0.1:8000/api/sunfish/sync-status/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to sync Sunfish status');
+        }
+
+        // Step 2: GET 요청으로 최신 데이터 가져오기
+        const getResponse = await fetch('http://127.0.0.1:8000/api/sunfish/');
+        if (!getResponse.ok) {
+            throw new Error('Failed to fetch Sunfish data');
+        }
+
+        const data = await getResponse.json();
+        console.log('GET Response:', data);
+
 
         if (Array.isArray(data) && data.length > 0) {
             // 성장 중인 Sunfish 필터링
@@ -162,28 +180,45 @@ function OceanSunFishStatus() {
     };
 
      if (allSunfish.length === 0) {
-         return <div>No alive Sunfish available.</div>;
-     }
+    // Sunfish가 없을 때 모달 렌더링
+    return (
+        <CreateFishModal
+            isVisible={true} // Sunfish가 없으므로 항상 모달이 보이도록 설정
+            onCreate={handleCreateFish} // 새로운 Sunfish 생성
+            onClose={() => console.log('Modal closed')} // 모달 닫기 버튼 동작 (필요한 경우 추가)
+        />
+    );
+}
+
 
     const stage = getStage(sunfish.level);
     const currentImage = images[stage];
 
     return (
-        <div className="ocean-level-container">
-            {/* 새로고침 버튼 추가 */}
+    <div className="ocean-level-container">
+        {/* Sunfish가 없을 경우 CreateFishModal 바로 렌더링 */}
+        {allSunfish.length === 0 ? (
+            <CreateFishModal
+                isVisible={true} // 항상 모달을 보여줌
+                onCreate={handleCreateFish}
+                onClose={() => console.log('Modal closed')} // 닫기 동작 정의
+            />
+        ) : (
+            // Sunfish가 있을 경우 일반적인 화면 렌더링
+            <>
                 <button className="refresh-button" onClick={forceRefresh}>
                     Refresh Data
                 </button>
-                {/* Sunfish가 없는 경우 Modal 표시 */}
-                <CreateFishModal
-                    isVisible={isModalVisible}
-                    onCreate={handleCreateFish}
-                    onClose={() => setModalVisible()}
+                <button
+                    className="simulate-button"
+                    onClick={() => setModalVisible(true)}
+                >
+                    Sunfish Creation
+                </button>
+                <MovingFish
+                    stage={stage}
+                    level={sunfish.level || 0}
                 />
-                <button className="simulate-button" onClick={() => setModalVisible(true)}>Sunfish Creation</button>
-                <MovingFish stage={stage} level={sunfish.level || 0} />
-
-
                 {/* 현재 Sunfish 상태 표시 */}
                 <div
                     className="current-sunfish-container"
@@ -193,36 +228,46 @@ function OceanSunFishStatus() {
                     <p>Stage: {stage}</p>
                     <p>Status: {sunfish.is_alive ? 'Alive' : 'Dead'}</p>
                     <div className="ocean-image">
-                        <img src={currentImage} alt={stage}/>
+                        <img src={currentImage} alt={stage} />
                     </div>
-                    <p className="dropdown-toggle">{dropdownOpen ? 'Hide All Fish ▲' : 'Show All Fish ▼'}</p>
+                    <p className="dropdown-toggle">
+                        {dropdownOpen ? 'Hide All Fish ▲' : 'Show All Fish ▼'}
+                    </p>
                 </div>
-
                 {dropdownOpen && (
                     <div className="sunfish-dropdown">
-                        {allSunfish.length === 0 ? (
-                            <p>No alive Sunfish available.</p>
-                        ) : (
-                            allSunfish.map((fish) => {
-                                const fishStage = getStage(fish.level);
-                                const fishImage = images[fishStage];
-
-                                return (
-                                    <div key={fish.id} className="dropdown-sunfish-item">
-                                        <img src={fishImage} alt={fishStage} className="dropdown-sunfish-image"/>
-                                        <div className="dropdown-sunfish-info">
-                                            <p>Name: {fish.name}</p>
-                                            <p>Status: {fish.is_alive ? 'Alive' : 'Dead'}</p>
-                                        </div>
+                        {allSunfish.map((fish) => {
+                            const fishStage = getStage(fish.level);
+                            const fishImage = images[fishStage];
+                            return (
+                                <div
+                                    key={fish.id}
+                                    className="dropdown-sunfish-item"
+                                >
+                                    <img
+                                        src={fishImage}
+                                        alt={fishStage}
+                                        className="dropdown-sunfish-image"
+                                    />
+                                    <div className="dropdown-sunfish-info">
+                                        <p>Name: {fish.name}</p>
+                                        <p>
+                                            Status:{' '}
+                                            {fish.is_alive
+                                                ? 'Alive'
+                                                : 'Dead'}
+                                        </p>
                                     </div>
-                                );
-                            })
-                        )}
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
-            </div>
+            </>
+        )}
+    </div>
+);
 
-    );
 }
 
 export default OceanSunFishStatus;

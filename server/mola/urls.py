@@ -5,6 +5,7 @@ from .views.SunfishLevelUp import SunfishLevelUpView
 from .views.create_fish import CreateFishAPI
 from .views.sunfish import SunfishAPI
 from .views.contribution import ContributionAPI
+from .views.SyncSunfishStatus import SyncSunfishStatus
 
 urlpatterns = [
     path('github/<str:username>/', GitHubContributionAPI().as_view(), name='github_contributions'),
@@ -16,4 +17,5 @@ urlpatterns = [
     path('contributions/<int:sunfish_id>/', ContributionAPI.as_view(), name='contribution-detail'),
     path('sunfish/<int:sunfish_id>/level-up/', SunfishLevelUpView.as_view(), name='sunfish-level-up'),
     path('sunfish/level-up/', SunfishLevelUpView.as_view(), name='level-up-api'),
+    path('sunfish/sync-status/', SyncSunfishStatus.as_view(), name='sync_sunfish_status'),
 ]

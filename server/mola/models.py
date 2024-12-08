@@ -17,6 +17,7 @@ class Sunfish(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)  # Last updated timestamp
     last_contribution_count = models.IntegerField(default=0)  # 어제까지의 기여도
+    last_processed_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.name} - Level {self.level}, Stage {self.stage}"
@@ -102,11 +103,12 @@ class Sunfish(models.Model):
 class Contribution(models.Model):
     date = models.DateField(default=date.today)  # Contribution date
     count = models.IntegerField(default=0)
+    processed = models.BooleanField(default=False)
 
     cache = TTLCache(maxsize=10, ttl=3600)  # Cache: max 10 entries, 1 hour TTL
 
     def __str__(self):
-        return f"{self.date}: {self.count}"
+        return f"{self.date}: {self.count} (Processed: {self.processed})"
 
     @staticmethod
     def get_today_contributions():
