@@ -33,3 +33,4 @@ yarn-error.log*
 *.pyc
 *.pyo
 *.log
+/client/node_modules/

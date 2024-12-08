@@ -1,5 +1,3 @@
-from wsgiref.util import request_uri
-
 from django.db import models
 from datetime import date, datetime
 import requests
@@ -88,7 +86,7 @@ class Sunfish(models.Model):
                 stage="dust",
                 is_alive=True
             )
-            # 최근 Sunfish가 50레벨에 도달하거나 죽은 상태인 경우 새로운 Sunfish 생성
+        # 최근 Sunfish가 50레벨에 도달하거나 죽은 상태인 경우 새로운 Sunfish 생성
         if latest_sunfish.level >= 50 or not latest_sunfish.is_alive:
             return Sunfish.objects.create(
                 name=name,
@@ -97,7 +95,7 @@ class Sunfish(models.Model):
                 is_alive=True
             )
 
-            # 조건이 충족되지 않으면 예외 발생
+        # 조건이 충족되지 않으면 예외 발생
         raise ValueError("Cannot create a new Sunfish: The latest Sunfish is still growing.")
 
 

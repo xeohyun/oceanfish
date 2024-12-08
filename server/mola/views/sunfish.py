@@ -19,8 +19,11 @@ class SunfishAPI(APIView):
             yesterday = today - timedelta(days=1)
 
             # 어제의 기여도 가져오기
-            yesterday_contributions = Contribution.objects.filter(date=yesterday).aggregate(total=Sum('count'))
-            yesterday_count = yesterday_contributions['total'] or 0
+            yesterday_contribution = Contribution.objects.filter(date=yesterday).first()
+            if yesterday_contribution:
+                yesterday_count = yesterday_contribution.count
+            else:
+                yesterday_count = 0
 
             # 어제의 기여도가 0인 경우
             if yesterday_count == 0:
@@ -71,6 +74,7 @@ class SunfishAPI(APIView):
                     # 오늘의 기여도를 반영한 레벨업
                     sunfish.calculate_level(contribution_difference)
                     sunfish.update_stage()
+                    print(sunfish.stage)
 
                     # 상태 갱신
                     sunfish.last_contribution_count = contributions_today

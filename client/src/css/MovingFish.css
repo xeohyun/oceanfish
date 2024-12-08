@@ -1,0 +1,12 @@
+.moving-fish {
+    position: absolute;
+    transition: top 2s ease, left 2s ease, transform 0.5s ease;
+    width: 100px;
+    height: 100px;
+}
+
+.moving-fish img {
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Prevent mouse interactions */
+}

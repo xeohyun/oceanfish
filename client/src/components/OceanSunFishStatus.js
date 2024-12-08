@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import dustLeft from '../img/dust_left.png';
-import dustRight from '../img/dust_right.png';
+import babyLeft from '../img/baby_left.png';
 import fishLeft from '../img/adult_left.png';
 import kingLeft from '../img/king_left.png';
 import '../css/OceanSunFish.css';
 import CreateFishModal from "./CreateFishModal";
+import MovingFish from "./MovingFish";
 
 function OceanSunFishStatus() {
     const [sunfish, setSunfish] = useState(null); // 가장 최근 Sunfish 데이터를 저장
@@ -12,12 +13,10 @@ function OceanSunFishStatus() {
     const [dropdownOpen, setDropdownOpen] = useState(false); // 드롭다운 상태
     const [refreshFlag, setRefreshFlag] = useState(false); // 데이터 강제 동기화 플래그
     const [isModalVisible, setModalVisible] = useState(false); // create Sunfish 모달창
-    const [deadFishIds, setDeadFishIds] = useState([]); // 이미 죽은 Sunfish ID를 추적
-
 
     const images = {
         dust: dustLeft,
-        baby: dustRight,
+        baby: babyLeft,
         adult: fishLeft,
         king: kingLeft,
     };
@@ -58,7 +57,6 @@ function OceanSunFishStatus() {
         console.error('Error fetching Sunfish data:', error);
     }
 };
-
 
     // Sunfish name 생성
      const handleCreateFish = (newName) => {
@@ -153,62 +151,66 @@ function OceanSunFishStatus() {
         return 'dust'; // 기본값
     };
 
+     if (allSunfish.length === 0) {
+         return <div>No alive Sunfish available.</div>;
+     }
+
     const stage = getStage(sunfish.level);
     const currentImage = images[stage];
 
     return (
         <div className="ocean-level-container">
             {/* 새로고침 버튼 추가 */}
-            <button className="refresh-button" onClick={forceRefresh}>
-                Refresh Data
-            </button>
+                <button className="refresh-button" onClick={forceRefresh}>
+                    Refresh Data
+                </button>
+                {/* Sunfish가 없는 경우 Modal 표시 */}
+                <CreateFishModal
+                    isVisible={isModalVisible}
+                    onCreate={handleCreateFish}
+                    onClose={() => setModalVisible(false)}
+                />
+                <button onClick={() => setModalVisible(true)}>Simulate Sunfish Creation</button>
 
-            {/* Sunfish가 없는 경우 Modal 표시 */}
-            <CreateFishModal
-                isVisible={isModalVisible}
-                onCreate={handleCreateFish}
-                onClose={() => setModalVisible(false)}
-            />
-            <button onClick={() => setModalVisible(true)}>Simulate Sunfish Creation</button>
-
-            {/* 현재 Sunfish 상태 표시 */}
-            <div
-                className="current-sunfish-container"
-                onClick={() => setDropdownOpen((prev) => !prev)}
-            >
-                <h2>Level: {sunfish.level}</h2>
-                <p>Stage: {stage}</p>
-                <p>Status: {sunfish.is_alive ? 'Alive' : 'Dead'}</p>
-                <div className="ocean-image">
-                    <img src={currentImage} alt={stage}/>
+                {/* 현재 Sunfish 상태 표시 */}
+                <div
+                    className="current-sunfish-container"
+                    onClick={() => setDropdownOpen((prev) => !prev)}
+                >
+                    <h2>Level: {sunfish.level}</h2>
+                    <p>Stage: {stage}</p>
+                    <p>Status: {sunfish.is_alive ? 'Alive' : 'Dead'}</p>
+                    <div className="ocean-image">
+                        <img src={currentImage} alt={stage}/>
+                    </div>
+                    <p className="dropdown-toggle">{dropdownOpen ? 'Hide All Fish ▲' : 'Show All Fish ▼'}</p>
                 </div>
-                <p className="dropdown-toggle">{dropdownOpen ? 'Hide All Fish ▲' : 'Show All Fish ▼'}</p>
+
+                {/* 드롭다운: 모든 살아있는 Sunfish 표시 */}
+                {dropdownOpen && (
+                    <div className="sunfish-dropdown">
+                        {allSunfish.length === 0 ? (
+                            <p>No alive Sunfish available.</p>
+                        ) : (
+                            allSunfish.map((fish) => {
+                                const fishStage = getStage(fish.level);
+                                const fishImage = images[fishStage];
+
+                                return (
+                                    <div key={fish.id} className="dropdown-sunfish-item">
+                                        <img src={fishImage} alt={fishStage} className="dropdown-sunfish-image"/>
+                                        <div className="dropdown-sunfish-info">
+                                            <p>Name: {fish.name}</p>
+                                            <p>Status: {fish.is_alive ? 'Alive' : 'Dead'}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        )}
+                    </div>
+                )}
             </div>
 
-            {/* 드롭다운: 모든 살아있는 Sunfish 표시 */}
-            {dropdownOpen && (
-                <div className="sunfish-dropdown">
-                    {allSunfish.length === 0 ? (
-                        <p>No alive Sunfish available.</p>
-                    ) : (
-                        allSunfish.map((fish) => {
-                            const fishStage = getStage(fish.level);
-                            const fishImage = images[fishStage];
-
-                            return (
-                                <div key={fish.id} className="dropdown-sunfish-item">
-                                    <img src={fishImage} alt={fishStage} className="dropdown-sunfish-image"/>
-                                    <div className="dropdown-sunfish-info">
-                                        <p>Name: {fish.name}</p>
-                                        <p>Status: {fish.is_alive ? 'Alive' : 'Dead'}</p>
-                                    </div>
-                                </div>
-                            );
-                        })
-                    )}
-                </div>
-            )}
-        </div>
     );
 }
 
