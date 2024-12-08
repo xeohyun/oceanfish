@@ -1,76 +1,123 @@
-.create-sunfish-container {
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to the top */
+    z-index: 1000;
+    padding-top: 50px; /* Space from the top */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #ffffff; /* White background */
+    border-radius: 8px;
+    padding: 20px;
     width: 100%;
     max-width: 400px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #f8f9fa; /* 연한 회색 배경 */
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     text-align: center;
+    animation: fadeIn 0.3s ease-out;
     font-family: Arial, sans-serif;
 }
 
-.create-sunfish-container h2 {
-    margin-bottom: 20px;
+/* Modal Title */
+.modal-content h2 {
+    margin-bottom: 10px;
     font-size: 24px;
     color: #333;
 }
 
-.create-sunfish-container p {
-    margin-bottom: 15px;
+/* Modal Description */
+.modal-content p {
     font-size: 14px;
     color: #555;
+    margin-bottom: 20px;
 }
 
-.create-sunfish-container form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-.create-sunfish-container input {
+/* Input Field */
+.name-input {
     width: 100%;
     padding: 10px;
     font-size: 16px;
     border: 1px solid #ced4da;
     border-radius: 4px;
     box-sizing: border-box;
-    transition: border-color 0.3s ease;
+    margin-bottom: 20px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.create-sunfish-container input:focus {
+.name-input:focus {
     outline: none;
-    border-color: #66afe9;
-    box-shadow: 0 0 5px rgba(102, 175, 233, 0.5);
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-.create-sunfish-container button {
-    padding: 10px 20px;
-    font-size: 16px;
-    color: #fff;
-    background-color: #007bff;
+/* Buttons Container */
+.modal-buttons {
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+}
+
+/* Confirm Button */
+.confirm-button {
+    background-color: #007bff; /* Green */
+    color: white;
     border: none;
     border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.create-sunfish-container button:hover {
-    background-color: #0056b3;
+.confirm-button:hover {
+    background-color: #0056b3; /* Darker green on hover */
+    transform: scale(1.05); /* Slight zoom on hover */
 }
 
-.create-sunfish-container .success-message {
-    margin-top: 15px;
-    font-size: 14px;
-    color: #28a745;
-    font-weight: bold;
+.confirm-button:active {
+    background-color: #004494; /* Even darker green on click */
+    transform: scale(1); /* Reset zoom on click */
 }
 
-.create-sunfish-container .error-message {
-    margin-top: 15px;
-    font-size: 14px;
-    color: #dc3545;
-    font-weight: bold;
+/* Cancel Button */
+.cancel-button {
+    background-color: #dc3545; /* Red */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
+.cancel-button:hover {
+    background-color: #c82333; /* Darker red on hover */
+    transform: scale(1.05); /* Slight zoom on hover */
+}
+
+.cancel-button:active {
+    background-color: #bd2130; /* Even darker red on click */
+    transform: scale(1); /* Reset zoom on click */
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px); /* Slight upward motion */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0); /* Original position */
+    }
+}
+

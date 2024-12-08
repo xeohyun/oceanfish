@@ -4,11 +4,24 @@ import dustLeft from '../img/dust_left.png';
 import babyLeft from '../img/baby_left.png';
 import fishLeft from '../img/adult_left.png';
 import kingLeft from '../img/king_left.png';
-import OceanSunFishStatus from "./OceanSunFishStatus";
+
 
 function MovingFish({ stage, level=0 }) {
-    const [position, setPosition] = useState({ top: 400, left: 700 }); // Initial position (center of screen)
-    const [direction, setDirection] = useState(1); // 1: right, -1: left (for flipping the image)
+    // Random initial position
+    const getRandomPosition = () => {
+        const windowHeight = window.innerHeight;
+        const windowWidth = window.innerWidth;
+        return {
+            top: Math.random() * (windowHeight - 100), // Random top position within window bounds
+            left: Math.random() * (windowWidth - 100), // Random left position within window bounds
+        };
+    };
+
+    // State for position and direction
+    const [position, setPosition] = useState(getRandomPosition());
+    const [direction, setDirection] = useState(1); // 1: right, -1: left
+
+
 
     // Map stages to corresponding images
     const stageImages = {
@@ -20,6 +33,10 @@ function MovingFish({ stage, level=0 }) {
 
     // Get the current image based on the stage
     const currentImage = stageImages[stage]
+
+    const getZIndex = (stage) => (stage === 'king' ? 0 : 10);
+
+    const zIndex = getZIndex(stage);
 
     const getDefaultScale = (stage) => {
     if (stage === 'king') {
@@ -37,10 +54,9 @@ function MovingFish({ stage, level=0 }) {
     // Return the scale factor for the given stage, or 1.0 if unknown
     return scaleFactors[stage] || 1.0;
 };
-    
+
     const getScaleByLevel = (stage, level) => {
     const baseScale = getDefaultScale(stage);
-    console.log(`Stage: ${stage}, Level: ${level}, BaseScale: ${baseScale}`);
     const scaleIncrement = 0.1;
     return baseScale + level * scaleIncrement;
 };
@@ -49,7 +65,7 @@ function MovingFish({ stage, level=0 }) {
 
     useEffect(() => {
         const moveFish = () => {
-            const windowHeight = window.innerHeight;
+            const windowHeight = window.innerHeight - 30;
             const windowWidth = window.innerWidth;
 
             const randomTop = Math.max(0, Math.min(windowHeight - 100, position.top + Math.random() * 100 - 50));
@@ -75,6 +91,7 @@ function MovingFish({ stage, level=0 }) {
                 top: `${position.top}px`,
                 left: `${position.left}px`,
                 transform: `scaleX(${direction}) scale(${scale})`, // Flip image based on direction
+                zIndex: zIndex,
             }}
         >
             <img src={currentImage} alt="Sunfish" style={{ width: '100%', height: '100%' }} />

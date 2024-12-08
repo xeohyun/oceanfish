@@ -8,7 +8,7 @@
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
-    z-index: 999;
+    z-index: 0;
 }
 
 .ocean-level-container h2 {
@@ -25,6 +25,33 @@
 .ocean-image img {
     width: 50px;
     height: auto;
+}
+
+.refresh-button,
+.simulate-button {
+    background-color: #007bff; /* Blue background */
+    color: white; /* White text */
+    border: none; /* Remove border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 10px 15px; /* Add padding */
+    font-size: 14px; /* Adjust font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    transition: all 0.3s ease; /* Smooth hover effect */
+}
+
+.refresh-button:hover,
+.simulate-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Enhance shadow on hover */
+    transform: translateY(-2px); /* Slightly move up on hover */
+}
+
+.refresh-button:active,
+.simulate-button:active {
+    background-color: #004494; /* Even darker blue on click */
+    transform: translateY(0); /* Reset position */
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2); /* Reduced shadow on click */
 }
 
 

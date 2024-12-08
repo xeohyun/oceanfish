@@ -87,7 +87,7 @@ function OceanSunFishStatus() {
     // Sunfish 레벨 업데이트 및 기여도 동기화
     const handleLevelUp = async (sunfishId) => {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/contributions/${sunfishId}/`);
+            /*const response = await fetch(`http://127.0.0.1:8000/api/contributions/${sunfishId}/`);
             if (!response.ok) {
                 throw new Error('Failed to fetch contributions');
             }
@@ -96,13 +96,22 @@ function OceanSunFishStatus() {
             const totalContributions = contributions.reduce((sum, entry) => sum + entry.count, 0);
 
             const levelUp = Math.min(4, totalContributions);
-            await updateSunfishLevel(sunfishId, levelUp);
+            await updateSunfishLevel(sunfishId, levelUp);*/
+             const response = await fetch('http://127.0.0.1:8000/api/sunfish/level-up/', {
+            method: 'POST',
+        });
+        if (!response.ok) {
+            throw new Error('Failed to level up Sunfish');
+        }
+        const data = await response.json();
+        console.log('Level-up response:', data);
+
         } catch (error) {
             console.error('Error handling level up:', error);
         }
     };
 
-    const updateSunfishLevel = async (sunfishId, levelUp) => {
+/*    const updateSunfishLevel = async (sunfishId, levelUp) => {
         try {
             const response = await fetch(`http://127.0.0.1:8000/api/sunfish/${sunfishId}/level-up/`, {
                 method: 'POST',
@@ -122,7 +131,7 @@ function OceanSunFishStatus() {
         } catch (error) {
             console.error('Error updating Sunfish level:', error);
         }
-    };
+    };*/
 
     // 데이터 동기화: 컴포넌트 마운트 또는 플래그 변경 시 실행
     useEffect(() => {
@@ -169,9 +178,9 @@ function OceanSunFishStatus() {
                 <CreateFishModal
                     isVisible={isModalVisible}
                     onCreate={handleCreateFish}
-                    onClose={() => setModalVisible(false)}
+                    onClose={() => setModalVisible()}
                 />
-                <button onClick={() => setModalVisible(true)}>Simulate Sunfish Creation</button>
+                <button className="simulate-button" onClick={() => setModalVisible(true)}>Sunfish Creation</button>
                 <MovingFish stage={stage} level={sunfish.level || 0} />
 
 
@@ -189,7 +198,6 @@ function OceanSunFishStatus() {
                     <p className="dropdown-toggle">{dropdownOpen ? 'Hide All Fish ▲' : 'Show All Fish ▼'}</p>
                 </div>
 
-                {/* 드롭다운: 모든 살아있는 Sunfish 표시 */}
                 {dropdownOpen && (
                     <div className="sunfish-dropdown">
                         {allSunfish.length === 0 ? (

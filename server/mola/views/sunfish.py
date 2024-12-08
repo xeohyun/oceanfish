@@ -20,6 +20,7 @@ class SunfishAPI(APIView):
 
             # 어제의 기여도 가져오기
             yesterday_contribution = Contribution.objects.filter(date=yesterday).first()
+            print(yesterday_contribution)
             if yesterday_contribution:
                 yesterday_count = yesterday_contribution.count
             else:
