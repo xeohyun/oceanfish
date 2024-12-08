@@ -22,25 +22,25 @@ function MovingFish({ stage, level=0 }) {
     const currentImage = stageImages[stage]
 
     const getDefaultScale = (stage) => {
-        if(stage == 'king'){
-            return 2.5;
-        }
-        const defaultSizes=(stage) => {
-                const scaleFactors = {
-                dust: 0.5,
-                baby: 1.0,
-                adult: 2.0,
-                king: 3.0,
-            };
-            const scale = scaleFactors[stage];
-            return scale || 1.0; // Fallback to 1.0 if stage is unknown
-        };
-    // Return the default size for the given stage, or 50 as a fallback
-    return defaultSizes[stage] || 1.0;
-};
+    if (stage === 'king') {
+        return 2.5; // king은 고정된 값 반환
+    }
 
+    // Define scale factors for other stages
+    const scaleFactors = {
+        dust: 1.5,
+        baby: 2.2,
+        adult: 1.8,
+        king: 3.0, // fallback value for king, though it's overridden above
+    };
+
+    // Return the scale factor for the given stage, or 1.0 if unknown
+    return scaleFactors[stage] || 1.0;
+};
+    
     const getScaleByLevel = (stage, level) => {
     const baseScale = getDefaultScale(stage);
+    console.log(`Stage: ${stage}, Level: ${level}, BaseScale: ${baseScale}`);
     const scaleIncrement = 0.1;
     return baseScale + level * scaleIncrement;
 };

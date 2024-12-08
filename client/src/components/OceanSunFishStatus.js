@@ -5,6 +5,7 @@ import fishLeft from '../img/adult_left.png';
 import kingLeft from '../img/king_left.png';
 import '../css/OceanSunFish.css';
 import CreateFishModal from "./CreateFishModal";
+import MovingFish from "./MovingFish";
 
 function OceanSunFishStatus() {
     const [sunfish, setSunfish] = useState(null); // 가장 최근 Sunfish 데이터를 저장
@@ -171,6 +172,8 @@ function OceanSunFishStatus() {
                     onClose={() => setModalVisible(false)}
                 />
                 <button onClick={() => setModalVisible(true)}>Simulate Sunfish Creation</button>
+                <MovingFish stage={stage} level={sunfish.level || 0} />
+
 
                 {/* 현재 Sunfish 상태 표시 */}
                 <div
