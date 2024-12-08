@@ -5,7 +5,6 @@ import fishLeft from '../img/adult_left.png';
 import kingLeft from '../img/king_left.png';
 import '../css/OceanSunFish.css';
 import CreateFishModal from "./CreateFishModal";
-import MovingFish from "./MovingFish";
 
 function OceanSunFishStatus() {
     const [sunfish, setSunfish] = useState(null); // 가장 최근 Sunfish 데이터를 저장
@@ -128,6 +127,7 @@ function OceanSunFishStatus() {
     useEffect(() => {
         fetchSunfishData();
     }, [refreshFlag]); // refreshFlag 변경 시마다 데이터 다시 가져옴
+
 
     // 동기화를 강제하는 함수
     const forceRefresh = () => {
