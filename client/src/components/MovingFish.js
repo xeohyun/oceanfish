@@ -23,12 +23,24 @@ function MovingFish({ stage, level }) {
     // Get the current image based on the stage
     const currentImage = stageImages[stage] || dustLeft; // Default to dustLeft if stage is unknown
 
-    const getSizeByLevel = (level) => {
-        const baseSize = 50; // Minimum size (level 1)
-        const sizeIncrement = 10; // Increment per level
-        return Math.min(baseSize + level * sizeIncrement, 500); // Cap size at 200px
+    const getDefaultSize = (stage) => {
+    // Define default sizes for each stage
+    const defaultSizes = {
+        dust: 20, // Default size for dust
+        baby: 80, // Default size for baby
+        adult: 200, // Default size for adult
+        king: 400, // Default size for king
     };
 
+    // Return the default size for the given stage, or 50 as a fallback
+    return defaultSizes[stage] || 50;
+};
+
+    const getSizeByLevel = (level) => {
+        const baseSize = getDefaultSize(stage); // Minimum size (level 1)
+        const sizeIncrement = 10; // Increment per level
+        return baseSize + level * sizeIncrement;
+    };
 
 
     const size = getSizeByLevel(level + 10); // Get size based on current level
