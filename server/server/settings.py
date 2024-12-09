@@ -17,7 +17,6 @@ from decouple import config
 SECRET_KEY = config('SECRET_KEY', default='fallback-secret-key')
 DEBUG = config('DEBUG', default=True, cast=bool)
 GITHUB_ACCESS_TOKEN = config('GITHUB_ACCESS_TOKEN')
-GITHUB_WEBHOOK_SECRET = os.getenv("GITHUB_WEBHOOK_SECRET")
 
 
 # ALLOWED_HOSTS 설정도 환경 변수로 관리 가능 (옵션)

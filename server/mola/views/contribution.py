@@ -6,7 +6,8 @@ from ..models import Contribution, Sunfish
 class ContributionAPI(APIView):
     def get(self, request, sunfish_id=None):
         try:
-            username = "xeohyun"  # GitHub 사용자 이름 설정
+            import os
+            username = os.getenv("GITHUB_USERNAME") # GitHub 사용자 이름 설정
             today = date.today()
 
             # Sunfish가 존재하는지 확인
