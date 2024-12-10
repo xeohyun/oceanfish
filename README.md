@@ -5,6 +5,8 @@ Users can grow their **Sunfish** through daily contributions, but the Sunfish di
 The application is built with **Django** as the backend and **React.js** as the frontend.
 
 ---
+## Execution Screen
+![screenshot](https://github.com/user-attachments/assets/6595dda5-82b2-41bf-915d-61b763f3c97d)
 
 ## Features 🎯
 
@@ -123,6 +125,8 @@ npm start
 웹 애플리케이션은 **Django**를 백엔드로, **React.js**를 프론트엔드로 구현되었습니다.
 
 ---
+## 실행 화면
+![screenshot](https://github.com/user-attachments/assets/6595dda5-82b2-41bf-915d-61b763f3c97d)
 
 ## 기능 소개 🎯
 ### Sunfish 생성 🌱
