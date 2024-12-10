@@ -13,7 +13,6 @@ The application is built with **Django** as the backend and **React.js** as the 
 ### Create Sunfish 🌱
 - You can create a new Sunfish.
 - A new Sunfish starts at `Level 1` and `Stage: Dust`.
-- Newly created Sunfish are excluded from level calculations on the day of creation and will start reflecting contributions the following day.
 
 ### Manage Sunfish 🛠️
 - The Sunfish level increases daily based on GitHub contributions.
@@ -132,7 +131,6 @@ npm start
 ### Sunfish 생성 🌱
 - 새로운 Sunfish를 생성할 수 있습니다.
 - Sunfish는 처음 생성 시 `Level 1`과 `Stage: Dust`로 시작합니다.
-- 생성된 Sunfish는 당일 레벨 계산에서 제외되며, 다음 날부터 기여도가 반영됩니다.
 
 ### Sunfish 관리 🛠️
 - 매일 GitHub 기여도를 바탕으로 Sunfish의 레벨이 증가합니다.
