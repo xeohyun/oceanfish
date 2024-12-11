@@ -16,10 +16,6 @@ Check out this video:
 
 ---
 
-You can also embed the video directly if supported:
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/mDyweYvmyQA" frameborder="0" allowfullscreen></iframe>
-
 ## Features 🎯
 
 ### Create Sunfish 🌱
